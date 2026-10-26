@@ -1,0 +1,24 @@
+
+# Dependencias instaladas pelo npm
+**/node_modules/
+
+# Variaveis de ambiente e senhas
+.env
+.env.*
+!.env.example
+
+# Arquivos gerados durante a compilacao
+**/dist/
+**/build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Configuracoes locais do editor
+.vscode/
