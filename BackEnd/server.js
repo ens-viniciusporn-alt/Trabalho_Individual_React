@@ -50,6 +50,51 @@ app.post("/api/pessoas", async (req, res) => {
   }
 });
 
+
+app.put("/api/pessoas/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const nome = String(req.body.nome || "").trim();
+
+  const cargoId =
+    req.body.cargo_id === "" || req.body.cargo_id == null
+      ? null
+      : Number(req.body.cargo_id);
+
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({ erro: "Identificador inválido." });
+  }
+
+  if (!nome) {
+    return res.status(400).json({ erro: "Informe o nome da pessoa." });
+  }
+
+  if (cargoId !== null && !Number.isInteger(cargoId)) {
+    return res.status(400).json({ erro: "Cargo inválido." });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE pessoas
+       SET nome = $1, cargo_id = $2
+       WHERE id = $3
+       RETURNING id, nome, cargo_id`,
+      [nome, cargoId, id]
+    );
+
+    if (!result.rowCount) {
+      return res.status(404).json({ erro: "Pessoa não encontrada." });
+    }
+
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      erro: "Não foi possível atualizar a pessoa. Confira se o cargo existe."
+    });
+  }
+});
+
+
 app.delete("/api/pessoas/:id", async (req, res) => {
   const id = Number(req.params.id);
   if (!Number.isInteger(id) || id < 1) return res.status(400).json({ erro: "Identificador inválido." });
